@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="filter">
+                <label for="selector">Select Search Filter: </label>
+                    <select name="selector" id="selector">
+                        <option value="">All</option>
+                        <option value="content">By Quote</option>
+                        <option value="author">By Author</option>
+                        <option value="tags">By Topic</option>
+                    </select>
+        </div>
+        <div id="quote-search-bar">
+            <form id="quote-search">
+                <input id="quote-search-value" type="text" placeholder="Search for Quotes!">
+                <button id="quote-display-trigger">Search</button>
+            </form>
+        </div>
+        <div id="display">
+            <div class="card">
+                <div class="card-body" >
+                    <blockquote class="blockquote mb-0" id="quote-altar">
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </body>
+    <!-- type="text/javascript" src="main.js" -->
+    <script>
+
+        document.addEventListener('change',()=>{
+            let filter = document.querySelector('#selector').value;
+            console.log(filter);
+            let link = "https://api.quotable.io/search/quotes?query=";
+
+            const displayButton = document.querySelector('#quote-display-trigger');
+            const quoteBlock = document.querySelector('#quote-altar');
+            
+
+            async function display() {
+                let query = document.querySelector('#quote-search-value').value;
+                console.log(query);
+                let fullLink;
+                if(filter != ""){
+                    let filters = "&fields="+ filter;
+                    fullLink = link + query + filters + "&limit=5";
+                }else{
+                    fullLink = link + query + "&limit=5";
+                }
+
+                if(query != null){
+                    const response = await fetch(fullLink);
+                    console.log(fullLink);
+                    const data = await response.json();
+
+
+                    if (response.ok) {
+                    // Update DOM elements
+                        quoteBlock.innerHTML="";
+
+                        data.results.forEach(function(result){
+                            var fullQuote = document.createElement('blockquote');
+                            var quoteText = document.createElement('p');
+                            var quoteCite = document.createElement('cite');
+                            var space = document.createElement('br');
+
+
+                            quoteText.textContent = result.content;
+                            quoteCite.textContent = result.author;
+
+                            console.log(quoteBlock);
+
+                            
+                            quoteBlock.appendChild(quoteText);
+                            quoteBlock.appendChild(quoteCite);
+                            quoteBlock.appendChild(space);
+
+                        });
+                    } else {
+                    let error = "An error occured";
+                    let er = document.createElement('span');
+                    er.textContent = error;
+                    quoteBlock.appendChild(er);
+
+                    console.log(data);
+                    }
+                }
+                }
+            let query = document.querySelector('#quote-search-value').value;
+
+            if(query != null){
+            //displayButton.addEventListener('click', display);
+            display();
+            }
+
+        });
+        
+    </script>
+</html>
